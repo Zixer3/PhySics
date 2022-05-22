@@ -18,6 +18,8 @@ class Game:
         self.name_game_pos = pymunk.Vec2d(0, 0)
         self.start_button = pg.image.load('Interface_pictures/start.png')
         self.start_button_pos = pymunk.Vec2d(0, 100)
+        self.vic_square = pg.image.load('Interface_pictures/victory.png')
+        self.vic_square_pos = (1204, 644)
 
         self.WIDTH = 1280
         self.HEIGHT = 720
@@ -27,6 +29,8 @@ class Game:
         self.space = pymunk.Space()
         self.gravityStrength = 10.0e6
         self.gravity_pos = pymunk.Vec2d(0, 0)
+        self.ball_pos = (26, 26)
+        self.balls = []
 
         self.body = pymunk.Body()
         self.ball_mass = 1
@@ -60,15 +64,95 @@ class Game:
         segment_shape_4.elasticity = 0.0
         segment_shape_4.friction = 1.0
 
+    def create_vic(self):
+        self.surface.blit(self.vic_square, self.vic_square_pos)
+
+    def create_maze(self, space):
+        segment_shape_1 = pymunk.Segment(space.static_body, (56, 56), (1224, 56), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1224, 56), (1224, 106), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1224, 106), (1174, 106), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1174, 106), (1174, 156), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1254, 156), (1224, 156), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1174, 156), (1174, 206), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1174, 206), (1224, 206), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1224, 206), (1224, 256), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1254, 306), (1174, 306), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (56, 56), (1174, 206), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (56, 56), (56, 360), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (56, 460), (56, 644), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (56, 644), (156, 644), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (256, 644), (1166, 644), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (206, 720), (206, 644), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (1166, 644), (1166, 544), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (156, 260), (156, 460), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+        segment_shape_1 = pymunk.Segment(space.static_body, (156, 260), (56, 260), 8)
+        space.add(segment_shape_1)
+        segment_shape_1.elasticity = 0.0
+        segment_shape_1.friction = 1.0
+
     def create_ball(self, space, pos):
         ball_moment = pymunk.moment_for_circle(ball_mass, 0, ball_radius)
         ball_body = pymunk.Body(ball_mass, ball_moment)
         ball_body.position = pos
         ball_shape = pymunk.Circle(ball_body, ball_radius)
-        ball_shape.elasticity = 0.0
-        ball_shape.friction = 0.6
+        ball_shape.elasticity = 0.5
+        ball_shape.friction = 0.3
         space.add(ball_body, ball_shape)
         ball_body.velocity_func = self.planetGravity
+        self.balls.append(ball_body)
+        for ball_body in self.balls:
+            print("ball position", ball_body.position)
         return ball_body
 
     def try_to_click(self, pos):
@@ -77,28 +161,24 @@ class Game:
                 self.active_window = 'game'
         if self.active_window == 'game':
             if 0 < pos[0] < 640 and 0 < pos[1] < 720:
-                if self.gravity_pos == (0,0) or self.gravity_pos == (0, 144
-                                ) or self.gravity_pos == (0, 288) or self.gravity_pos == (0, 432) or self.gravity_pos == (0, 576):
-                    self.gravity_pos += pymunk.Vec2d(0, 144)
-                elif self.gravity_pos == (0,720) or self.gravity_pos == (256, 720
-                                ) or self.gravity_pos == (512, 720) or self.gravity_pos == (768, 720) or self.gravity_pos == (1024, 720):
-                    self.gravity_pos += pymunk.Vec2d(256, 0)
-                elif self.gravity_pos == (1280,720) or self.gravity_pos == (1280, 144
-                                ) or self.gravity_pos == (1280, 288) or self.gravity_pos == (1280, 432) or self.gravity_pos == (1280, 576):
-                    self.gravity_pos += pymunk.Vec2d(0, -144)
-                elif self.gravity_pos == (1280, 0) or self.gravity_pos == (256, 0
-                                ) or self.gravity_pos == (512, 0) or self.gravity_pos == (768, 0) or self.gravity_pos == (1024, 0):
-                    self.gravity_pos += pymunk.Vec2d(-256, 0)
+                if self.gravity_pos == (0, 0):
+                    self.gravity_pos += pymunk.Vec2d(0, 720)
+                elif self.gravity_pos == (0, 720):
+                    self.gravity_pos += pymunk.Vec2d(1280, 0)
+                elif self.gravity_pos == (1280, 720):
+                    self.gravity_pos += pymunk.Vec2d(0, -720)
+                elif self.gravity_pos == (1280, 0) :
+                    self.gravity_pos += pymunk.Vec2d(-1280, 0)
             elif 641 < pos[0] < 1280 and 0 < pos[1] < 720:
-                if self.gravity_pos == (0, 144) or self.gravity_pos == (0, 288) or self.gravity_pos == (0, 432) or self.gravity_pos == (0, 576) or self.gravity_pos == (0, 720):
-                    self.gravity_pos += pymunk.Vec2d(0, -144)
-                elif self.gravity_pos == (256, 720) or self.gravity_pos == (512, 720) or self.gravity_pos == (768, 720) or self.gravity_pos == (1024, 720) or self.gravity_pos == (1280, 720):
-                    self.gravity_pos += pymunk.Vec2d(-256, 0)
-                elif self.gravity_pos == (1280,720) or self.gravity_pos == (1280, 144
-                                ) or self.gravity_pos == (1280, 288) or self.gravity_pos == (1280, 432) or self.gravity_pos == (1280, 576) or self.gravity_pos == (1280, 0):
-                    self.gravity_pos += pymunk.Vec2d(0, 144)
-                elif self.gravity_pos == (256, 0) or self.gravity_pos == (512, 0) or self.gravity_pos == (768, 0) or self.gravity_pos == (1024, 0) or self.gravity_pos == (0, 0):
-                    self.gravity_pos += pymunk.Vec2d(256, 0)
+                if self.gravity_pos == (0, 720):
+                    self.gravity_pos += pymunk.Vec2d(0, -720)
+                elif self.gravity_pos == (1280, 720):
+                    self.gravity_pos += pymunk.Vec2d(-1280, 0)
+                elif self.gravity_pos == (1280, 0):
+                    self.gravity_pos += pymunk.Vec2d(0, 720)
+                elif self.gravity_pos == (0, 0):
+                    self.gravity_pos += pymunk.Vec2d(1280, 0)
+
     def menu_draw(self):
         self.surface.fill((0, 0, 0))
         self.surface.blit(self.name_game, self.name_game_pos)
@@ -112,20 +192,27 @@ class Game:
             for i in pg.event.get():
                 if i.type == pg.QUIT:
                     exit()
+            self.create_vic()
 
             self.space.step(1 / self.FPS)
             self.space.debug_draw(self.draw_options)
 
-            pg.draw.circle(self.surface, pg.Color("red"), self.gravity_pos, 50)
+            pg.draw.circle(self.surface, pg.Color("red"), self.gravity_pos, 25)
         elif self.active_window == 'menu':
             self.menu_draw()
 
 
     def start(self):
-        self.create_ball(self.space, (26, 26))
+        self.create_ball(self.space, (self.ball_pos))
         self.create_platform(self.space)
+        self.create_maze(self.space)
         while True:
+            print(self.balls[0].position[0])
+            if 1204 < self.balls[0].position[0] < 1280 and 644 < self.balls[0].position[1] < 720:
+                pg.quit()
+                return 0
             for event in pg.event.get():
+
                 if event.type == pg.QUIT:
                     pg.quit()
                     return 0
